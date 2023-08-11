@@ -24,6 +24,7 @@ import Image from 'next/image'
 import { useForm, UseFormRegisterReturn } from 'react-hook-form'
 import { FiFile } from 'react-icons/fi'
 import styles from './page.module.css'
+import { ENDPOINT_DISPLAY_PHOTOS, ENDPOINT_UPLOAD_PHOTO } from './utils'
 
 type FileUploadProps = {
   register: UseFormRegisterReturn
@@ -42,29 +43,30 @@ type Photo = {
 }
 
 const FileUpload = (props: FileUploadProps) => {
-  const { register, accept, multiple, children } = props
+  const { register, accept } = props
   const [fileName, setFileName] = useState<string>('');
   const inputRef = useRef<HTMLInputElement | null>(null)
   const { ref, ...rest } = register as {ref: (instance: HTMLInputElement | null) => void}
 
+  console.log("Props ", props);
   const handleClick = () => inputRef.current?.click()
+  const handleChange = () => {
+    let value = inputRef.current?.value;
+    let name = value?.replace(/^.*[\\\/]/, '');
+    setFileName(name || '');
+  }
 
   return (
-      <InputGroup onClick={handleClick}>
+      <InputGroup onClick={handleClick} onChange={handleChange}>
         <input
           type={'file'}
-          multiple={multiple || false}
+          multiple={false}
           hidden
           accept={accept}
           {...rest}
           ref={(e) => {
             ref(e)
             inputRef.current = e
-          }}
-          onChange={(e) => {
-            const value = e.target.value;
-            const name = value.replace(/^.*[\\\/]/, '');
-            setFileName(name);
           }}
         />
         <>
@@ -95,7 +97,7 @@ const Home = () => {
     formData.append("file", data?.file_[0]);
     formData.append("comment", comment);
 
-    fetch("https://photo-api-2001-65fcbee78f36.herokuapp.com/photo/upload", {
+    fetch(ENDPOINT_UPLOAD_PHOTO, {
         method: "POST",
         body: formData
     })
@@ -107,6 +109,7 @@ const Home = () => {
   })
 
   const validateFiles = (value: FileList) => {
+    console.log("File list ", value);
     if (value.length < 1) {
       return 'Files is required'
     }
@@ -121,7 +124,7 @@ const Home = () => {
   }
 
   const displayPhotos = () => {
-    fetch("https://photo-api-2001-65fcbee78f36.herokuapp.com/photo/displayData", { next: { revalidate: 10 } })
+    fetch(ENDPOINT_DISPLAY_PHOTOS, { next: { revalidate: 10 } })
     .then(results => results.json())
     .then((data :DisplayDataResponse) => {
         console.log("Results ", data);
@@ -144,7 +147,6 @@ const Home = () => {
             <FormLabel style={{ width: '200px', fontSize: 14}}>Click here</FormLabel>
             <FileUpload
               accept={'image/*'}
-              multiple
               register={register('file_', { validate: validateFiles })}
             />
           </div>
