@@ -90,7 +90,20 @@ const Home = () => {
 
   const onSubmit = handleSubmit((data) => {
     console.log('On Submit: ', data);
+    
+    const formData = new FormData();
+    formData.append("file", data?.file_[0]);
+    formData.append("comment", comment);
 
+    fetch("http://localhost:8080/photo/upload", {
+        method: "POST",
+        body: formData
+    })
+    .then(results => results.json())
+    .then(data => {
+        console.log("Data ", data);
+        displayPhotos();
+    })
   })
 
   const validateFiles = (value: FileList) => {
@@ -106,6 +119,21 @@ const Home = () => {
     }
     return true
   }
+
+  const displayPhotos = () => {
+    fetch("http://localhost:8080/photo/displayData", { next: { revalidate: 10 } })
+    .then(results => results.json())
+    .then((data :DisplayDataResponse) => {
+        console.log("Results ", data);
+        setPhotos(data.data);
+    })
+  }
+
+  useEffect(() => {
+    displayPhotos();
+  }, []);
+
+  console.log("Photos ", photos);
 
   return (
     <>
@@ -134,6 +162,40 @@ const Home = () => {
         </FormControl>
         <button className={styles.submitbutton}>Submit</button>
       </form>
+
+      <TableContainer>
+        <Table variant='simple' className={styles.phototable}>
+          <Thead className={styles.tablehead}>
+            <Tr>
+              <Th>Image</Th>
+              <Th>Comment</Th>
+            </Tr>
+          </Thead>
+          <Tbody>
+            {photos.length > 0 && photos.map((item) => {
+              return (
+                <Tr key={"photos-" + item.imageUrl} >
+                  <Td>
+                    <Image
+                      alt={item.comment}
+                      src={item.imageUrl}
+                      placeholder="blur"
+                      width={400}
+                      height={400}
+                      style={{
+                        objectFit: 'cover',
+                      }}
+                      loading='lazy'
+                      blurDataURL="data:image/jpeg"
+                    />
+                  </Td>
+                  <Td>{item.comment}</Td>
+                </Tr>
+              )
+            })}
+          </Tbody>
+        </Table>
+      </TableContainer>
     </>
   )
 }

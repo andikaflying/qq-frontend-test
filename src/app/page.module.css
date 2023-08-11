@@ -267,3 +267,21 @@
   font-size: 14px;
   margin-top: 12px;
 }
+
+.phototable {
+  width: 800px;
+  margin: auto;
+  margin-top: 36px;
+  box-shadow: rgb(145 158 171 / 34%) 0px 0px 2px 0px, rgba(145, 158, 171, 0.12) -1px 11px 24px -4px;
+  border-radius: 12px;
+}
+
+.tablehead {
+  background-color: rgb(244, 246, 248);
+}
+
+.tablehead > tr > th {
+  text-transform: initial;
+  font-size: 14px;
+  border-radius: 18px 0px 0px 0px;
+}
