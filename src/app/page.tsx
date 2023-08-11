@@ -1,95 +1,141 @@
+'use client'
+
+import { ReactNode, useEffect, useRef, useState } from 'react'
+import { 
+  Button, 
+  FormControl, 
+  FormErrorMessage, 
+  FormLabel, 
+  Icon, 
+  Input,
+  InputGroup,
+  TableContainer,
+  Table,
+  TableCaption,
+  Text,
+  Thead,
+  Tr,
+  Th,
+  Td,
+  Tbody,
+  Tfoot
+} from '@chakra-ui/react'
 import Image from 'next/image'
+import { useForm, UseFormRegisterReturn } from 'react-hook-form'
+import { FiFile } from 'react-icons/fi'
 import styles from './page.module.css'
 
-export default function Home() {
+type FileUploadProps = {
+  register: UseFormRegisterReturn
+  accept?: string
+  multiple?: boolean
+  children?: ReactNode
+}
+
+type DisplayDataResponse = {
+  data: Photo[]
+}
+
+type Photo = {
+  imageUrl: string
+  comment: string
+}
+
+const FileUpload = (props: FileUploadProps) => {
+  const { register, accept, multiple, children } = props
+  const [fileName, setFileName] = useState<string>('');
+  const inputRef = useRef<HTMLInputElement | null>(null)
+  const { ref, ...rest } = register as {ref: (instance: HTMLInputElement | null) => void}
+
+  const handleClick = () => inputRef.current?.click()
+
   return (
-    <main className={styles.main}>
-      <div className={styles.description}>
-        <p>
-          Get started by editing&nbsp;
-          <code className={styles.code}>src/app/page.tsx</code>
-        </p>
-        <div>
-          <a
-            href="https://vercel.com?utm_source=create-next-app&utm_medium=appdir-template&utm_campaign=create-next-app"
-            target="_blank"
-            rel="noopener noreferrer"
-          >
-            By{' '}
-            <Image
-              src="/vercel.svg"
-              alt="Vercel Logo"
-              className={styles.vercelLogo}
-              width={100}
-              height={24}
-              priority
-            />
-          </a>
-        </div>
-      </div>
-
-      <div className={styles.center}>
-        <Image
-          className={styles.logo}
-          src="/next.svg"
-          alt="Next.js Logo"
-          width={180}
-          height={37}
-          priority
+      <InputGroup onClick={handleClick}>
+        <input
+          type={'file'}
+          multiple={multiple || false}
+          hidden
+          accept={accept}
+          {...rest}
+          ref={(e) => {
+            ref(e)
+            inputRef.current = e
+          }}
+          onChange={(e) => {
+            const value = e.target.value;
+            const name = value.replace(/^.*[\\\/]/, '');
+            setFileName(name);
+          }}
         />
-      </div>
-
-      <div className={styles.grid}>
-        <a
-          href="https://nextjs.org/docs?utm_source=create-next-app&utm_medium=appdir-template&utm_campaign=create-next-app"
-          className={styles.card}
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          <h2>
-            Docs <span>-&gt;</span>
-          </h2>
-          <p>Find in-depth information about Next.js features and API.</p>
-        </a>
-
-        <a
-          href="https://nextjs.org/learn?utm_source=create-next-app&utm_medium=appdir-template&utm_campaign=create-next-app"
-          className={styles.card}
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          <h2>
-            Learn <span>-&gt;</span>
-          </h2>
-          <p>Learn about Next.js in an interactive course with&nbsp;quizzes!</p>
-        </a>
-
-        <a
-          href="https://vercel.com/templates?framework=next.js&utm_source=create-next-app&utm_medium=appdir-template&utm_campaign=create-next-app"
-          className={styles.card}
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          <h2>
-            Templates <span>-&gt;</span>
-          </h2>
-          <p>Explore the Next.js 13 playground.</p>
-        </a>
-
-        <a
-          href="https://vercel.com/new?utm_source=create-next-app&utm_medium=appdir-template&utm_campaign=create-next-app"
-          className={styles.card}
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          <h2>
-            Deploy <span>-&gt;</span>
-          </h2>
-          <p>
-            Instantly deploy your Next.js site to a shareable URL with Vercel.
-          </p>
-        </a>
-      </div>
-    </main>
+        <>
+          <Button leftIcon={<Icon as={FiFile} />} className={styles.uploadbutton}>
+            Upload
+          </Button>
+          <Text fontSize='sm' className={styles.uploadedimage} >
+            {fileName}
+          </Text>
+        </>
+      </InputGroup>
   )
 }
+
+type FormValues = {
+  file_: FileList
+}
+
+const Home = () => {
+  const { register, handleSubmit, formState: { errors } } = useForm<FormValues>()
+  const [comment, setComment] = useState<string>('');
+  const [photos, setPhotos] = useState<Photo[]>([]);
+
+  const onSubmit = handleSubmit((data) => {
+    console.log('On Submit: ', data);
+
+  })
+
+  const validateFiles = (value: FileList) => {
+    if (value.length < 1) {
+      return 'Files is required'
+    }
+    for (const file of Array.from(value)) {
+      const fsMb = file.size / (1024 * 1024)
+      const MAX_FILE_SIZE = 10
+      if (fsMb > MAX_FILE_SIZE) {
+        return 'Max file size 10mb'
+      }
+    }
+    return true
+  }
+
+  return (
+    <>
+      <form onSubmit={onSubmit} className={styles.formupload} >
+        <FormControl isInvalid={!!errors.file_} isRequired>
+          <Text fontSize='xl' className={styles.uploadheader}>Upload Photo</Text>
+          <div>
+            <FormLabel style={{ width: '200px', fontSize: 14}}>Click here</FormLabel>
+            <FileUpload
+              accept={'image/*'}
+              multiple
+              register={register('file_', { validate: validateFiles })}
+            />
+          </div>
+          <FormErrorMessage>
+            {errors.file_ && errors?.file_.message}
+          </FormErrorMessage>
+          <Input 
+            value={comment} 
+            placeholder='Comment' 
+            size='md' 
+            type='text' 
+            className={styles.comment}
+            onChange={(e) => setComment(e.target.value)} 
+          />
+        </FormControl>
+        <button className={styles.submitbutton}>Submit</button>
+      </form>
+    </>
+  )
+}
+
+export default Home
