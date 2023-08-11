@@ -283,5 +283,36 @@
 .tablehead > tr > th {
   text-transform: initial;
   font-size: 14px;
-  border-radius: 18px 0px 0px 0px;
+}
+
+.tablehead > tr > th:nth-child(1) {
+  border-radius: 20px 0px 0px 0px;
+}
+
+.tablehead > tr > th:nth-child(2) {
+  border-radius: 0px 20px 0px 0px;
+}
+
+.columnimage {
+  width: 60%;
+}
+
+.columncomment {
+  width: 40%;
+  white-space: normal;
+  word-wrap: break-word;
+}
+
+@media screen and (max-width: 600px) {
+  .uploadedimage {
+    font-size: 13px;
+  }
+
+  .formupload {
+    width: 320px;
+  }
+
+  .phototable {
+    width: 320px;
+  }
 }

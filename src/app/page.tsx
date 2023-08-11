@@ -140,7 +140,7 @@ const Home = () => {
 
   return (
     <>
-      <form onSubmit={onSubmit} className={styles.formupload} >
+      <form onSubmit={onSubmit} className={styles.formupload}>
         <FormControl isInvalid={!!errors.file_} isRequired>
           <Text fontSize='xl' className={styles.uploadheader}>Upload Photo</Text>
           <div>
@@ -177,7 +177,7 @@ const Home = () => {
             {photos.length > 0 && photos.map((item) => {
               return (
                 <Tr key={"photos-" + item.imageUrl} >
-                  <Td style={{ width: '60%' }}>
+                  <Td className={styles.columnimage}>
                     <Image
                       alt={item.comment}
                       src={item.imageUrl}
@@ -191,7 +191,7 @@ const Home = () => {
                       blurDataURL="data:image/jpeg"
                     />
                   </Td>
-                  <Td>{item.comment}</Td>
+                  <Td className={styles.columncomment}>{item.comment}</Td>
                 </Tr>
               )
             })}
