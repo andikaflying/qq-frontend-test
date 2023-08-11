@@ -165,39 +165,40 @@ const Home = () => {
         <button className={styles.submitbutton}>Submit</button>
       </form>
 
-      <TableContainer>
-        <Table variant='simple' className={styles.phototable}>
-          <Thead className={styles.tablehead}>
-            <Tr>
-              <Th>Image</Th>
-              <Th>Comment</Th>
-            </Tr>
-          </Thead>
-          <Tbody>
-            {photos.length > 0 && photos.map((item) => {
-              return (
-                <Tr key={"photos-" + item.imageUrl} >
-                  <Td className={styles.columnimage}>
-                    <Image
-                      alt={item.comment}
-                      src={item.imageUrl}
-                      placeholder="blur"
-                      width={400}
-                      height={250}
-                      style={{
-                        objectFit: 'cover',
-                      }}
-                      loading='lazy'
-                      blurDataURL="data:image/jpeg"
-                    />
-                  </Td>
-                  <Td className={styles.columncomment}>{item.comment}</Td>
-                </Tr>
-              )
-            })}
-          </Tbody>
-        </Table>
-      </TableContainer>
+      {photos.length > 0 && 
+        <TableContainer>
+          <Table variant='simple' className={styles.phototable}>
+            <Thead className={styles.tablehead}>
+              <Tr>
+                <Th>Image</Th>
+                <Th>Comment</Th>
+              </Tr>
+            </Thead>
+            <Tbody>
+              {photos.map((item) => {
+                return (
+                  <Tr key={"photos-" + item.imageUrl} >
+                    <Td className={styles.columnimage}>
+                      <Image
+                        alt={item.comment}
+                        src={item.imageUrl}
+                        placeholder="blur"
+                        width={400}
+                        height={250}
+                        style={{
+                          objectFit: 'cover',
+                        }}
+                        loading='lazy'
+                        blurDataURL="data:image/jpeg"
+                      />
+                    </Td>
+                    <Td className={styles.columncomment}>{item.comment}</Td>
+                  </Tr>
+                )
+              })}
+            </Tbody>
+          </Table>
+        </TableContainer>}
     </>
   )
 }
