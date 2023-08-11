@@ -177,13 +177,13 @@ const Home = () => {
             {photos.length > 0 && photos.map((item) => {
               return (
                 <Tr key={"photos-" + item.imageUrl} >
-                  <Td>
+                  <Td style={{ width: '60%' }}>
                     <Image
                       alt={item.comment}
                       src={item.imageUrl}
                       placeholder="blur"
                       width={400}
-                      height={400}
+                      height={250}
                       style={{
                         objectFit: 'cover',
                       }}
