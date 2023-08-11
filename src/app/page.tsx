@@ -95,7 +95,7 @@ const Home = () => {
     formData.append("file", data?.file_[0]);
     formData.append("comment", comment);
 
-    fetch("http://localhost:8080/photo/upload", {
+    fetch("https://photo-api-2001-65fcbee78f36.herokuapp.com/photo/upload", {
         method: "POST",
         body: formData
     })
@@ -121,7 +121,7 @@ const Home = () => {
   }
 
   const displayPhotos = () => {
-    fetch("http://localhost:8080/photo/displayData", { next: { revalidate: 10 } })
+    fetch("https://photo-api-2001-65fcbee78f36.herokuapp.com/photo/displayData", { next: { revalidate: 10 } })
     .then(results => results.json())
     .then((data :DisplayDataResponse) => {
         console.log("Results ", data);
