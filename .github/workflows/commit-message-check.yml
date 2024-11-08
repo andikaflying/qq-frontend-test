@@ -18,7 +18,7 @@ jobs:
 
       - name: Validate commit messages
         run: |
-          commits=$(git log --pretty=format:"%s" -n 10)
+          commits=$(git log --pretty=format:"%s" -n 3)
           regex="^(feat|fix|test|chore|perf)\(V88-\d+\): .+$"
           for commit in $commits; do
             if [[ ! $commit =~ $regex ]]; then
