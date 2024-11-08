@@ -1,0 +1,26 @@
+name: Commit Message Check
+
+on: [pull_request, push]
+
+jobs:
+  check-commit-message:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v2
+
+      - name: Get total commits in branch
+        id: total-commits
+        run: |
+          total_commits=$(git rev-list --count HEAD)
+          echo "Total commits in branch: $total_commits. Commit Message = ${{ github.event.commits[0].message }}"
+
+      - name: Validate commit messages
+        run: |
+          commits=$(git log --pretty=format:"%s" -n 3)
+          regex="^(feat|fix|test|chore|perf)\(V88-\d+\): .+$"
+          for commit in $commits; do
+            if [[ ! $commit =~ $regex ]]; then
+              echo "Invalid commit message: $commit"
+            fi
+          done
