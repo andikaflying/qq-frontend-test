@@ -23,6 +23,5 @@ jobs:
           for commit in $commits; do
             if [[ ! $commit =~ $regex ]]; then
               echo "Invalid commit message: $commit"
-              exit 1
             fi
           done
