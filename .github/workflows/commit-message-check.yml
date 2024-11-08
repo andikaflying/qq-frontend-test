@@ -13,8 +13,7 @@ jobs:
         id: total-commits
         run: |
           total_commits=$(git rev-list --count HEAD)
-          echo "Total commits in branch: $total_commits"
-          echo "::set-output name=total_commits::$total_commits"
+          echo "Total commits in branch: $total_commits. Commit Message = ${{ github.event.head_commit.message }}"
 
       - name: Validate commit messages
         run: |
